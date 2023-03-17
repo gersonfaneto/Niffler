@@ -1,6 +1,6 @@
 # Niffler
 
-[![License](https://img.shields.io/github/license/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffller/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler/blob/main/LICENSE)
 [![Stars](https://img.shields.io/github/stars/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler)
 ![Status](https://img.shields.io/static/v1?label=STATUS&message=DEVELOPMENT+🚧&color=yellow&style=for-the-badge)
 ![Language](https://img.shields.io/static/v1?label=LANGUAGE&message=Python&color=informational&style=for-the-badge)
