@@ -1,5 +1,10 @@
-Niffler
-=======
+# Niffler
+
+[![License](https://img.shields.io/github/license/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffller/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler)
+![Status](https://img.shields.io/static/v1?label=STATUS&message=DEVELOPMENT+🚧&color=yellow&style=for-the-badge)
+![Language](https://img.shields.io/static/v1?label=LANGUAGE&message=Python&color=informational&style=for-the-badge)
+![Version](https://img.shields.io/static/v1?label=VERSION&message=1.0&color=success&style=for-the-badge)
 
 > This project was based on a college assignment, so don't expect much of it 😉.
 
@@ -23,7 +28,7 @@ $ git clone https://github.com/gersonfaneto/Niffler
 ```
 
 2. Execute the `Niffler.py` using your installed python interpreter (version >= 3.10)
-or as any other bash like script.
+   or as any other bash like script.
 
 ```bash
 $ python Niffler.py --help
@@ -37,4 +42,4 @@ $ ./Niffler.py -h
 
 ## License
 
-Released under [MIT](./LICENSE) by [gersonfaneto](https://github.com/gersonfaneto).
+Released under [MIT](https://github.com/gersonfaneto/Niffler/blob/main/LICENSE) by [gersonfaneto](https://github.com/gersonfaneto).
