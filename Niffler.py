@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 
+from typing import Tuple, List, Dict
 from sys import argv
 from os import mkdir, environ, system
 from os.path import isdir, isfile
 
-Arguments = {
+Arguments: Dict[Tuple[str, str], str] = {
     ("-a", "--add"): "Give a file (or some) to 'Niffler' and it will analyze it!",
     ("-r", "--remove"): "Give a file to 'Niffler' and it will erase from his knowledge!",
     ("-s", "--search-index"): "Give a term/word to 'Niffler' and he will find it's ocurrences on the Index!",
     ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
 }
 
-ProgramName = argv.pop(0)
+ProgramName: str = argv.pop(0)
 
 
 def validateArgument(recievedArg: str) -> bool:
