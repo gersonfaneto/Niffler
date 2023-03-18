@@ -5,51 +5,58 @@ from sys import argv
 from os import mkdir, environ, system
 from os.path import isdir, isfile
 
-SupportedArguments: Dict[Tuple[str, str], str] = {
-    ("-a", "--add"): "Give a file (or some) to 'Niffler' and it will analyze it!",
-    ("-r", "--remove"): "Give a file to 'Niffler' and it will erase from his knowledge!",
-    ("-s", "--search-index"): "Give a term/word to 'Niffler' and he will find its ocurrences on the Index!",
-    ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
-}
 
-ProgramName: str = argv.pop(0)
-Arguments: List[str] = [
-    x for x in argv if x.startswith("-") or x.startswith("--")
-]
+def helpMessage(programName: str, supportedArguments: Dict[Tuple[str, str], str]) -> None:
+    print("'Niffler': A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
+    print(f"Usage: {programName} <OPTION> [FILES...]\n")
+
+    for keyPair, argDescription in supportedArguments.items():
+        shortVersion, fullVersion = keyPair
+        print(f"{'' + shortVersion +  ', ' + fullVersion:<30} {argDescription}")
 
 
-def validateArguments(recievedArgs: List[str]) -> bool:
+def validateArguments(programName: str, supportedArguments: Dict[Tuple[str, str], str], recievedArgs: List[str]) -> bool:
     if len(recievedArgs) == 0:
-        print("Error: 'Niffler' must recieve a command to execute!")
-        exit(1)
+        helpMessage(programName, supportedArguments)
+        return False
 
     if len(recievedArgs) > 1:
         print("Error: 'Niffler' can only run ONE operation at a time!")
-        exit(1)
+        return False
 
-    for keyPair, argDescription in SupportedArguments.items():
-        if recievedArgs[0] in keyPair:
-            print(argDescription)
-            return True
+    return True
+
+
+def validateOption(selectedOption: str, supportedArguments: Dict[Tuple[str, str], str]) -> bool:
+    if len(selectedOption) > 0:
+        for keyPair, argDescription in supportedArguments.items():
+            if selectedOption in keyPair:
+                print(
+                    f"You selected the option '{selectedOption}'! {argDescription}"
+                )
+                return True
+    print(
+        f"You selected '{selectedOption}! 'Niffler' doesn't know that one..."
+    )
     return False
 
 
 # WARNING: Linux/Unix compatible only!
 def ensureDependencies() -> bool:
     try:
-        HOME_PATH: str = environ['HOME']
-        INSTALL_PATH: str = HOME_PATH + "/.niffler/"
-        INDEX_PATH: str = INSTALL_PATH + "InvertedIndex.niffler"
-        IGNORE_PATH: str = INSTALL_PATH + "Ignore.niffler"
+        homePath: str = environ['HOME']
+        installPath: str = homePath + "/.niffler/"
+        indexPath: str = installPath + "InvertedIndex.niffler"
+        ignorePath: str = installPath + "Ignore.niffler"
 
-        if not isdir(INSTALL_PATH):
-            mkdir(INSTALL_PATH)
+        if not isdir(installPath):
+            mkdir(installPath)
 
-        if not isfile(INDEX_PATH):
-            system("touch " + INDEX_PATH)
+        if not isfile(indexPath):
+            system("touch " + indexPath)
 
-        if not isfile(IGNORE_PATH):
-            system("touch " + IGNORE_PATH)
+        if not isfile(ignorePath):
+            system("touch " + ignorePath)
 
         return True
     except:
@@ -57,12 +64,25 @@ def ensureDependencies() -> bool:
 
 
 def main() -> None:
+
+    supportedArguments: Dict[Tuple[str, str], str] = {
+        ("-a", "--add"): "Give a file (or some) to 'Niffler' and it will analyze it!",
+        ("-r", "--remove"): "Give a file to 'Niffler' and it will be erased from his knowledge!",
+        ("-s", "--search-index"): "Give a term/word to 'Niffler' and he will find its ocurrences on the Index!",
+        ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
+    }
+
+    programName: str = argv.pop(0)
+    arguments: List[str] = [
+        x for x in argv if x.startswith("-") or x.startswith("--")
+    ]
+
     if not ensureDependencies():
         print("Error: Couldn't create nedded dependencies!")
         exit(1)
 
-    if not validateArguments(Arguments):
-        print(f"Usage: {ProgramName} <OPTION> [FILES...]")
+    if not validateArguments(programName, supportedArguments, arguments):
+        exit(1)
 
 
 if __name__ == "__main__":
