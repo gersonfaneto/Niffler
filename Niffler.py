@@ -6,39 +6,55 @@ from os import mkdir, environ, system
 from os.path import isdir, isfile
 
 
-def helpMessage(programName: str, supportedArguments: Dict[Tuple[str, str], str]) -> None:
+def errorMessage(programName: str) -> None:
+    print("'Niffler': Waiting for orders...")
+    print(f"'Niffler': Try using '{programName} --help' for more information!")
+
+
+def helpMessage(programName: str, supportedOptions: Dict[Tuple[str, str], str]) -> None:
     print("'Niffler': A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
     print(f"Usage: {programName} <OPTION> [FILES...]\n")
 
-    for keyPair, argDescription in supportedArguments.items():
+    for keyPair, argDescription in supportedOptions.items():
         shortVersion, fullVersion = keyPair
         print(f"{'' + shortVersion +  ', ' + fullVersion:<30} {argDescription}")
 
 
-def validateArguments(programName: str, supportedArguments: Dict[Tuple[str, str], str], recievedArgs: List[str]) -> bool:
-    if len(recievedArgs) == 0:
-        helpMessage(programName, supportedArguments)
+def validateOption(supportedOptions: Dict[Tuple[str, str], str], recievedOption: str, hasComplement: bool = True) -> bool:
+    for keyPair, argDescription in supportedOptions.items():
+        if recievedOption in keyPair and hasComplement:
+            return True
+        elif recievedOption in keyPair and not hasComplement:
+            print(f"You selected the '{recievedOption}' option! {argDescription}'")
+            return False
+
+    print(f"You selected the '{recievedOption}' option! 'Niffler' doesn't know this one...")
+    return False
+
+
+def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str], recievedOption: List[str], recievedFiles: List[str]) -> bool:
+    if len(recievedOption) == 0 and len(recievedFiles) == 0:
+        errorMessage(programName)
         return False
 
-    if len(recievedArgs) > 1:
+    if len(recievedOption) == 0:
+        helpMessage(programName, supportedOptions)
+        return False
+
+    if len(recievedOption) == 1 and len(recievedFiles) == 0:
+        if recievedOption[0] in ["-h", "--help"]:
+            helpMessage(programName, supportedOptions)
+            return True
+        return validateOption(supportedOptions, recievedOption[0], hasComplement=False)
+
+    if len(recievedOption) == 1 and len(recievedOption) > 0:
+        return validateOption(supportedOptions, recievedOption[0])
+
+    if len(recievedOption) > 1:
         print("Error: 'Niffler' can only run ONE operation at a time!")
         return False
 
     return True
-
-
-def validateOption(selectedOption: str, supportedArguments: Dict[Tuple[str, str], str]) -> bool:
-    if len(selectedOption) > 0:
-        for keyPair, argDescription in supportedArguments.items():
-            if selectedOption in keyPair:
-                print(
-                    f"You selected the option '{selectedOption}'! {argDescription}"
-                )
-                return True
-    print(
-        f"You selected '{selectedOption}! 'Niffler' doesn't know that one..."
-    )
-    return False
 
 
 # WARNING: Linux/Unix compatible only!
@@ -73,15 +89,15 @@ def main() -> None:
     }
 
     programName: str = argv.pop(0)
-    arguments: List[str] = [
-        x for x in argv if x.startswith("-") or x.startswith("--")
-    ]
+
+    recievedOptions: List[str] = [x for x in argv if x.startswith("-") or x.startswith("--")]
+    recievedFiles: List[str] = list(set(argv) - set(recievedOptions))
 
     if not ensureDependencies():
         print("Error: Couldn't create nedded dependencies!")
         exit(1)
 
-    if not validateArguments(programName, supportedArguments, arguments):
+    if not validateArguments(programName, supportedArguments, recievedOptions, recievedFiles):
         exit(1)
 
 
