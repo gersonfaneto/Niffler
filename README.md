@@ -10,11 +10,9 @@
 
 ## What is this?
 
-'Niffler' is based on the idea of other tools like 'fzf' and 'grep'. It is a tool
+'Niffler' is inspired on the functionality of other tools like 'fzf' and 'grep'. It is a tool
 capable of sweeping through a collection of files and summarize their contents on
 a searchable 'Inverted Index'.
-
-> **Warning**: 'Niffler' currently supports only \*.txt files!
 
 ## How to use it?
 
@@ -23,18 +21,18 @@ a searchable 'Inverted Index'.
 
 1. Clone/Download the project files onto your local machine.
 
-```bash
+```console
 $ git clone https://github.com/gersonfaneto/Niffler
 ```
 
 2. Execute the `Niffler.py` using your installed python interpreter (version >= 3.10)
    or as any other bash like script.
 
-```bash
+```console
 $ python Niffler.py --help
 ```
 
-```bash
+```console
 $ ./Niffler.py -h
 ```
 
