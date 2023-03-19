@@ -2,7 +2,7 @@
 
 from typing import Tuple, List, Dict
 from sys import argv
-from os import mkdir, environ, system
+from os import mkdir, environ, system, walk
 from os.path import isdir, isfile
 
 
@@ -30,6 +30,13 @@ def validateOption(supportedOptions: Dict[Tuple[str, str], str], recievedOption:
 
     print(f"You selected the '{recievedOption}' option! 'Niffler' doesn't know this one...")
     return False
+
+
+def validateFiles(recievedFiles: List[str]) -> bool:
+    for filePath in recievedFiles:
+        if not isfile(filePath):
+            return False
+    return True
 
 
 def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str], recievedOption: List[str], recievedFiles: List[str]) -> bool:
@@ -98,6 +105,10 @@ def main() -> None:
         exit(1)
 
     if not validateArguments(programName, supportedArguments, recievedOptions, recievedFiles):
+        exit(1)
+
+    if not validateFiles(recievedFiles):
+        print("Error: Couldn't read provided file(s)!")
         exit(1)
 
 
