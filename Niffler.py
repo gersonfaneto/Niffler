@@ -3,21 +3,18 @@
 from typing import Tuple, List, Dict
 from sys import argv
 from os import walk, mkdir, environ, system
-from os.path import isdir, isfile, join, basename
+from os.path import isdir, isfile, join 
 from string import punctuation
 
 
 # WARNING: Linux/Unix compatible only!
-def ensureDependencies(homePath: str, installPath: str, indexPath: str, ignorePath: str) -> bool:
+def ensureDependencies(homePath: str, installPath: str, indexPath: str) -> bool:
     try:
         if not isdir(installPath):
             mkdir(installPath)
 
         if not isfile(indexPath):
             system("touch " + indexPath)
-
-        if not isfile(ignorePath):
-            system("touch " + ignorePath)
 
         return True
     except:
@@ -156,12 +153,11 @@ def main() -> None:
 
     homePath: str = environ['HOME']
     installPath: str = homePath + "/.niffler/"
-    indexPath: str = installPath + "InvertedIndex.niffler"
-    ignorePath: str = installPath + "Ignore.niffler"
+    invertedIndex_Cache: str = installPath + "InvertedIndex.niffler"
 
     programName: str = argv.pop(0)
 
-    supportedArguments: Dict[Tuple[str, str], str] = {
+    supportedPaths: Dict[Tuple[str, str], str] = {
         ("-a", "--add"): "Give a file (or some) to 'Niffler' and it will analyze it!",
         ("-r", "--remove"): "Give a file to 'Niffler' and it will be erased from his knowledge!",
         ("-s", "--search-index"): "Give a term/word to 'Niffler' and he will find its ocurrences on the Index!",
@@ -173,11 +169,11 @@ def main() -> None:
 
     invertedIndex: Dict[str, Dict[str, int]] = {}
 
-    if not ensureDependencies(homePath, installPath, indexPath, ignorePath):
+    if not ensureDependencies(homePath, installPath, invertedIndex_Cache):
         print("'Niffler': Couldn't create nedded dependencies!")
         exit(1)
 
-    if not validateArguments(programName, supportedArguments, recievedOptions, recievedPaths):
+    if not validateArguments(programName, supportedPaths, recievedOptions, recievedPaths):
         exit(1)
 
     validPaths, _ = validatePaths(recievedPaths)
@@ -196,7 +192,7 @@ def main() -> None:
     if chosenOption in ["-a", "--add"]:
         for currentPath in validPaths:
             indexFile(currentPath, invertedIndex)
-        writeCache(indexPath, invertedIndex)
+        writeCache(invertedIndex_Cache, invertedIndex)
     else:
         print(f"'Niffler': Sorry! The option '{chosenOption}' is currently under development!")
         exit(1)
