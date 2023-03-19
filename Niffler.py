@@ -106,6 +106,14 @@ def writeCache(cachePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None
             indexCache.write(f"[{word}]:{invertedIndex[word]}\n")
 
 
+
+def readCache(cachePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+    with open(cachePath, "r") as indexCache:
+        for line in indexCache.readlines():
+            word, wordInfo = line.split(":", 1)
+            invertedIndex[word] = eval(wordInfo)
+
+
 def indexFile(filePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
     fileContent: List[str] = readFile(filePath)
 
