@@ -3,7 +3,7 @@
 from typing import Tuple, List, Dict
 from sys import argv
 from os import mkdir, environ, system, walk
-from os.path import isdir, isfile
+from os.path import isdir, isfile, join
 
 
 def errorMessage(programName: str) -> None:
@@ -32,15 +32,22 @@ def validateOption(supportedOptions: Dict[Tuple[str, str], str], recievedOption:
     return False
 
 
-def validateFiles(recievedFiles: List[str]) -> bool:
-    for filePath in recievedFiles:
-        if not isfile(filePath):
+def validateFiles(recievedPaths: List[str]) -> bool:
+    for currentPath in recievedPaths:
+        if isdir(currentPath):
+            for rootPath, _, filePaths in walk(currentPath):
+                for filePath in filePaths:
+                    if not isfile(join(rootPath, filePath)):
+                        print(join(rootPath, filePath))
+                        return False
+            return True
+        if not isfile(currentPath):
             return False
     return True
 
 
-def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str], recievedOption: List[str], recievedFiles: List[str]) -> bool:
-    if len(recievedOption) == 0 and len(recievedFiles) == 0:
+def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str], recievedOption: List[str], recievedPaths: List[str]) -> bool:
+    if len(recievedOption) == 0 and len(recievedPaths) == 0:
         errorMessage(programName)
         return False
 
@@ -48,7 +55,7 @@ def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], 
         helpMessage(programName, supportedOptions)
         return False
 
-    if len(recievedOption) == 1 and len(recievedFiles) == 0:
+    if len(recievedOption) == 1 and len(recievedPaths) == 0:
         if recievedOption[0] in ["-h", "--help"]:
             helpMessage(programName, supportedOptions)
             return True
@@ -98,16 +105,16 @@ def main() -> None:
     programName: str = argv.pop(0)
 
     recievedOptions: List[str] = [x for x in argv if x.startswith("-") or x.startswith("--")]
-    recievedFiles: List[str] = list(set(argv) - set(recievedOptions))
+    recievedPaths: List[str] = list(set(argv) - set(recievedOptions))
 
     if not ensureDependencies():
         print("Error: Couldn't create nedded dependencies!")
         exit(1)
 
-    if not validateArguments(programName, supportedArguments, recievedOptions, recievedFiles):
+    if not validateArguments(programName, supportedArguments, recievedOptions, recievedPaths):
         exit(1)
 
-    if not validateFiles(recievedFiles):
+    if not validateFiles(recievedPaths):
         print("Error: Couldn't read provided file(s)!")
         exit(1)
 
