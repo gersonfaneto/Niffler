@@ -8,7 +8,7 @@ from string import punctuation
 
 
 # WARNING: Linux/Unix compatible only!
-def ensureDependencies(homePath: str, installPath: str, indexPath: str) -> bool:
+def ensureDependencies(installPath: str, indexPath: str) -> bool:
     try:
         if not isdir(installPath):
             mkdir(installPath)
@@ -26,13 +26,22 @@ def errorMessage(programName: str) -> None:
     print(f"'Niffler': Try using '{programName} --help' for more information!")
 
 
-def helpMessage(programName: str, supportedOptions: Dict[Tuple[str, str], str]) -> None:
+def helpMessage(programName: str, supportedOptions: Dict[Tuple[str, str], str], supportedModifiers: Dict[Tuple[str, str], str]) -> None:
     print("\n'Niffler': A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
-    print(f"Usage: {programName} <OPTION> [FILES...]\n")
+    print(f"Usage: {programName} <OPTION> [FILE.../WORD]\n")
 
-    for keyPair, argDescription in supportedOptions.items():
+    print("Options:")
+    for keyPair, optionDescription in supportedOptions.items():
         shortVersion, fullVersion = keyPair
-        print(f"{'' + shortVersion +  ', ' + fullVersion:<30} {argDescription}")
+        print(f"{'' + shortVersion +  ', ' + fullVersion:<30} {optionDescription}")
+
+
+    print("\nModifiers:")
+    for keyPair, modifierDescription in supportedModifiers.items():
+        shortVersion, fullVersion = keyPair
+        print(f"{'' + shortVersion +  ', ' + fullVersion:<30} {modifierDescription}")
+
+    print("\nReleased under MIT by @gersonfaneto")
 
 
 def validateOption(supportedOptions: Dict[Tuple[str, str], str], recievedOption: str, hasComplement: bool = True) -> bool:
@@ -67,18 +76,21 @@ def validatePaths(recievedPaths: List[str]) -> Tuple[List[str], List[str]]:
     return validPaths, invalidPaths
 
 
-def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str], recievedOption: List[str], recievedPaths: List[str]) -> bool:
+def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str],
+                      supportedModifiers: Dict[Tuple[str, str], str], recievedOption: List[str],
+                      recievedPaths: List[str]) -> bool:
+
     if len(recievedOption) == 0 and len(recievedPaths) == 0:
         errorMessage(programName)
         return False
 
     if len(recievedOption) == 0:
-        helpMessage(programName, supportedOptions)
+        helpMessage(programName, supportedOptions, supportedModifiers)
         return False
 
     if len(recievedOption) == 1 and len(recievedPaths) == 0:
         if recievedOption[0] in ["-h", "--help"]:
-            helpMessage(programName, supportedOptions)
+            helpMessage(programName, supportedOptions, supportedModifiers)
             exit(0)
         return validateOption(supportedOptions, recievedOption[0], hasComplement=False)
 
@@ -157,11 +169,14 @@ def main() -> None:
 
     programName: str = argv.pop(0)
 
-    supportedPaths: Dict[Tuple[str, str], str] = {
-        ("-a", "--add"): "Give a file (or some) to 'Niffler' and it will analyze it!",
-        ("-r", "--remove"): "Give a file to 'Niffler' and it will be erased from his knowledge!",
-        ("-s", "--search-index"): "Give a term/word to 'Niffler' and he will find its ocurrences on the Index!",
+    supportedOptions: Dict[Tuple[str, str], str] = {
+        ("-a", "--add"): "Give a FILE (or some) to 'Niffler' and it will analyze it!",
+        ("-r", "--remove"): "Give a FILE (or some) to 'Niffler' and it will be erased from his knowledge!",
+        ("-s", "--search-index"): "Give a WORD to 'Niffler' and he will find its ocurrences on the Index!",
         ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
+    }
+    supportedModifiers: Dict[Tuple[str, str], str] = {
+        ("-v", "--verbose"): "Extends the output information of some operations."
     }
 
     recievedOptions: List[str] = [x for x in argv if x.startswith("-") or x.startswith("--")]
@@ -169,11 +184,11 @@ def main() -> None:
 
     invertedIndex: Dict[str, Dict[str, int]] = {}
 
-    if not ensureDependencies(homePath, installPath, invertedIndex_Cache):
+    if not ensureDependencies(installPath, invertedIndex_Cache):
         print("'Niffler': Couldn't create nedded dependencies!")
         exit(1)
 
-    if not validateArguments(programName, supportedPaths, recievedOptions, recievedPaths):
+    if not validateArguments(programName, supportedOptions, supportedModifiers, recievedOptions, recievedPaths):
         exit(1)
 
     validPaths, _ = validatePaths(recievedPaths)
