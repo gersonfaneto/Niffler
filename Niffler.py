@@ -3,7 +3,29 @@
 from typing import Tuple, List, Dict
 from sys import argv
 from os import mkdir, environ, system, walk
-from os.path import isdir, isfile, join
+from os.path import basename, isdir, isfile, join
+
+
+# WARNING: Linux/Unix compatible only!
+def ensureDependencies() -> bool:
+    try:
+        homePath: str = environ['HOME']
+        installPath: str = homePath + "/.niffler/"
+        indexPath: str = installPath + "InvertedIndex.niffler"
+        ignorePath: str = installPath + "Ignore.niffler"
+
+        if not isdir(installPath):
+            mkdir(installPath)
+
+        if not isfile(indexPath):
+            system("touch " + indexPath)
+
+        if not isfile(ignorePath):
+            system("touch " + ignorePath)
+
+        return True
+    except:
+        return False
 
 
 def errorMessage(programName: str) -> None:
@@ -77,26 +99,9 @@ def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], 
     return True
 
 
-# WARNING: Linux/Unix compatible only!
-def ensureDependencies() -> bool:
-    try:
-        homePath: str = environ['HOME']
-        installPath: str = homePath + "/.niffler/"
-        indexPath: str = installPath + "InvertedIndex.niffler"
-        ignorePath: str = installPath + "Ignore.niffler"
-
-        if not isdir(installPath):
-            mkdir(installPath)
-
-        if not isfile(indexPath):
-            system("touch " + indexPath)
-
-        if not isfile(ignorePath):
-            system("touch " + ignorePath)
-
-        return True
-    except:
-        return False
+def readFile(filePath: str) -> List[str]:
+    with open(filePath) as currentFile:
+        return currentFile.read().splitlines()
 
 
 def main() -> None:
@@ -110,11 +115,12 @@ def main() -> None:
 
     programName: str = argv.pop(0)
 
-    recievedOptions: List[str] = [x for x in argv if x.startswith("-") or x.startswith("--")]
+    recievedOptions: List[str] = [
+        x for x in argv if x.startswith("-") or x.startswith("--")]
     recievedPaths: List[str] = list(set(argv) - set(recievedOptions))
 
     if not ensureDependencies():
-        print("ERROR: Couldn't create nedded dependencies!")
+        print("'Niffler': Couldn't create nedded dependencies!")
         exit(1)
 
     if not validateArguments(programName, supportedArguments, recievedOptions, recievedPaths):
@@ -123,14 +129,36 @@ def main() -> None:
     validPaths, invalidPaths = validatePaths(recievedPaths)
 
     if len(invalidPaths) > 0:
-        print("\nWARNING: The following files were out of reach!\n")
+        print("\n'Niffler': The following files were out of reach!\n")
         for currentPath in invalidPaths:
-            print(f"- {currentPath}")
+            print(f"- {basename(currentPath)}")
 
     if len(validPaths) > 0:
-        print("\nINFO: Indexing the following files...\n")
+        print("\n'Niffler': Indexing the following files...\n")
         for currentPath in validPaths:
-            print(f"- {currentPath}")
+            print(f"- {basename(currentPath)}")
+
+    filesContents: Dict[str, List[str]] = {}
+    invertedIndex: Dict[str, Dict[str, int]] = {}
+
+    for currentPath in validPaths:
+        filesContents[currentPath] = readFile(currentPath)
+
+    for filePath, fileContent in filesContents.items():
+        for line in fileContent:
+            for word in line.split():
+                newWord: str = word.upper()
+                qntOcurrences: int = line.split().count(word)
+                for char in newWord:
+                    if ord(char) not in range(65, 91) and ord(char) not in range(97, 123):
+                        newWord = newWord.replace(char, '')
+                if newWord in invertedIndex.keys():
+                    if filePath in invertedIndex[newWord].keys():
+                        invertedIndex[newWord][filePath] += qntOcurrences
+                    else:
+                        invertedIndex[newWord][filePath] = qntOcurrences
+                else:
+                    invertedIndex[newWord] = {filePath: qntOcurrences}
 
 
 if __name__ == "__main__":
