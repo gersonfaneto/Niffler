@@ -7,12 +7,12 @@ from os.path import isdir, isfile, join
 
 
 def errorMessage(programName: str) -> None:
-    print("'Niffler': Waiting for orders...")
+    print("\n'Niffler': Waiting for orders...")
     print(f"'Niffler': Try using '{programName} --help' for more information!")
 
 
 def helpMessage(programName: str, supportedOptions: Dict[Tuple[str, str], str]) -> None:
-    print("'Niffler': A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
+    print("\n'Niffler': A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
     print(f"Usage: {programName} <OPTION> [FILES...]\n")
 
     for keyPair, argDescription in supportedOptions.items():
@@ -32,18 +32,24 @@ def validateOption(supportedOptions: Dict[Tuple[str, str], str], recievedOption:
     return False
 
 
-def validateFiles(recievedPaths: List[str]) -> bool:
+def validatePaths(recievedPaths: List[str]) -> Tuple[List[str], List[str]]:
+    validPaths: List[str] = []
+    invalidPaths: List[str] = []
+
     for currentPath in recievedPaths:
         if isdir(currentPath):
             for rootPath, _, filePaths in walk(currentPath):
                 for filePath in filePaths:
-                    if not isfile(join(rootPath, filePath)):
-                        print(join(rootPath, filePath))
-                        return False
-            return True
-        if not isfile(currentPath):
-            return False
-    return True
+                    if isfile(join(rootPath, filePath)):
+                        validPaths.append(join(rootPath, filePath))
+                    else:
+                        invalidPaths.append(join(rootPath, filePath))
+        elif isfile(currentPath):
+            validPaths.append(currentPath)
+        else:
+            invalidPaths.append(currentPath)
+
+    return validPaths, invalidPaths
 
 
 def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str], recievedOption: List[str], recievedPaths: List[str]) -> bool:
@@ -65,7 +71,7 @@ def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], 
         return validateOption(supportedOptions, recievedOption[0])
 
     if len(recievedOption) > 1:
-        print("Error: 'Niffler' can only run ONE operation at a time!")
+        print("ERROR: 'Niffler' can only run ONE operation at a time!")
         return False
 
     return True
@@ -108,15 +114,23 @@ def main() -> None:
     recievedPaths: List[str] = list(set(argv) - set(recievedOptions))
 
     if not ensureDependencies():
-        print("Error: Couldn't create nedded dependencies!")
+        print("ERROR: Couldn't create nedded dependencies!")
         exit(1)
 
     if not validateArguments(programName, supportedArguments, recievedOptions, recievedPaths):
         exit(1)
 
-    if not validateFiles(recievedPaths):
-        print("Error: Couldn't read provided file(s)!")
-        exit(1)
+    validPaths, invalidPaths = validatePaths(recievedPaths)
+
+    if len(invalidPaths) > 0:
+        print("\nWARNING: The following files were out of reach!\n")
+        for currentPath in invalidPaths:
+            print(f"- {currentPath}")
+
+    if len(validPaths) > 0:
+        print("\nINFO: Indexing the following files...\n")
+        for currentPath in validPaths:
+            print(f"- {currentPath}")
 
 
 if __name__ == "__main__":
