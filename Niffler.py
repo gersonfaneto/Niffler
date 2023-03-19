@@ -7,13 +7,8 @@ from os.path import basename, isdir, isfile, join
 
 
 # WARNING: Linux/Unix compatible only!
-def ensureDependencies() -> bool:
+def ensureDependencies(homePath: str, installPath: str, indexPath: str, ignorePath: str) -> bool:
     try:
-        homePath: str = environ['HOME']
-        installPath: str = homePath + "/.niffler/"
-        indexPath: str = installPath + "InvertedIndex.niffler"
-        ignorePath: str = installPath + "Ignore.niffler"
-
         if not isdir(installPath):
             mkdir(installPath)
 
@@ -133,6 +128,11 @@ def showIndex(invertedIndex: Dict[str, Dict[str, int]]) -> None:
 
 def main() -> None:
 
+    homePath: str = environ['HOME']
+    installPath: str = homePath + "/.niffler/"
+    indexPath: str = installPath + "InvertedIndex.niffler"
+    ignorePath: str = installPath + "Ignore.niffler"
+
     programName: str = argv.pop(0)
 
     supportedArguments: Dict[Tuple[str, str], str] = {
@@ -148,7 +148,7 @@ def main() -> None:
 
     invertedIndex: Dict[str, Dict[str, int]] = {}
 
-    if not ensureDependencies():
+    if not ensureDependencies(homePath, installPath, indexPath, ignorePath):
         print("'Niffler': Couldn't create nedded dependencies!")
         exit(1)
 
