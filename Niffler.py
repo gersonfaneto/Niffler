@@ -100,6 +100,12 @@ def readFile(filePath: str) -> List[str]:
         return currentFile.read().splitlines()
 
 
+def writeCache(cachePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+    with open(cachePath, "w+") as indexCache:
+        for word in invertedIndex.keys():
+            indexCache.write(f"[{word}]:{invertedIndex[word]}\n")
+
+
 def indexFile(filePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
     fileContent: List[str] = readFile(filePath)
 
