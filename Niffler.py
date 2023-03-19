@@ -2,8 +2,9 @@
 
 from typing import Tuple, List, Dict
 from sys import argv
-from os import mkdir, environ, system, walk
-from os.path import basename, isdir, isfile, join
+from os import walk, mkdir, environ, system
+from os.path import isdir, isfile, join, basename
+from string import punctuation
 
 
 # WARNING: Linux/Unix compatible only!
@@ -104,11 +105,12 @@ def indexFile(filePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
 
     for line in fileContent:
         for word in line.split():
-            newWord: str = word.upper()
+            newWord: str = "".join(filter(lambda x: x not in punctuation, word.upper()))
             qntOcurrences: int = line.split().count(word)
-            for char in newWord:
-                if ord(char) not in range(65, 91) and ord(char) not in range(97, 123):
-                    newWord = newWord.replace(char, '')
+
+            if len(newWord) == 0:
+                continue
+
             if newWord in invertedIndex.keys():
                 if filePath in invertedIndex[newWord].keys():
                     invertedIndex[newWord][filePath] += qntOcurrences
@@ -142,7 +144,6 @@ def main() -> None:
         ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
     }
 
-
     recievedOptions: List[str] = [x for x in argv if x.startswith("-") or x.startswith("--")]
     recievedPaths: List[str] = list(set(argv) - set(recievedOptions))
 
@@ -167,11 +168,11 @@ def main() -> None:
     #     print("\n'Niffler': Indexing the following files...\n")
     #     for currentPath in validPaths:
     #         print(f"- {basename(currentPath)}")
-
     
     if chosenOption in ["-a", "--add"]:
         for currentPath in validPaths:
             indexFile(currentPath, invertedIndex)
+        writeCache(indexPath, invertedIndex)
     else:
         print(f"'Niffler': Sorry! The option '{chosenOption}' is currently under development!")
         exit(1)
