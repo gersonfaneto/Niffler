@@ -110,6 +110,16 @@ def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], 
             helpMessage(programName, supportedOptions, supportedModifiers)
             return True
 
+        if recievedOptions[0] in ["-s", "--search-index"] and len(recievedComplements) == 1:
+            return True
+        if recievedOptions[0] in ["-s", "--search-index"] and len(recievedComplements) == 0:
+            return validateOption(supportedOptions, recievedOptions[0], False)
+
+        if recievedOptions[0] in ["-S", "--show-index"] and len(recievedComplements) == 0:
+            return True
+        if recievedOptions[0] in ["-S", "--show-index"] and len(recievedComplements) > 0:
+            return validateOption(supportedOptions, recievedOptions[0], False)
+
         if len(recievedModifiers) == 1 and len(recievedComplements) == 0:
             return validateOption(supportedOptions, recievedOptions[0], False)
 
@@ -118,16 +128,6 @@ def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], 
                 return validateOption(supportedOptions, recievedOptions[0])
             else:
                 return False
-
-        if recievedOptions in ["-s", "--search-index"] and len(recievedComplements) == 1:
-            return True
-        if recievedOptions in ["-s", "--search-index"] and len(recievedComplements) == 0:
-            return validateOption(supportedOptions, recievedOptions[0], False)
-
-        if recievedOptions in ["-S", "--show-index"] and len(recievedComplements) == 0:
-            return True
-        if recievedOptions in ["-S", "--show-index"] and len(recievedComplements) > 0:
-            return validateOption(supportedOptions, recievedOptions[0], False)
 
         if len(recievedComplements) > 0:
             return validateOption(supportedOptions, recievedOptions[0])
@@ -152,7 +152,7 @@ def readCache(cachePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
     with open(cachePath, "r") as indexCache:
         for line in indexCache.readlines():
             word, wordInfo = line.split(":", 1)
-            invertedIndex[word] = eval(wordInfo)
+            invertedIndex[word[1:-1]] = eval(wordInfo)
 
 
 def indexFile(filePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
@@ -190,7 +190,7 @@ def searchIndex(chosenTerm: str, invertedIndex: Dict[str, Dict[str, int]]) -> No
         for filePath, qntOcurrences in invertedIndex[possibleKey].items():
             print(f"IN: {filePath} - OCURRENCES: {qntOcurrences}")
     else:
-        print(f"\n'Niffler': '{chosenTerm.title()}' not found!\n")
+        print(f"\n'Niffler': '{chosenTerm.title()}' not found!")
 
 
 def main() -> None:
