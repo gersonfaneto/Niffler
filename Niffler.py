@@ -138,8 +138,18 @@ def showIndex(invertedIndex: Dict[str, Dict[str, int]]) -> None:
     for word in invertedIndex.keys():
         print(f"{word}: ")
         for filePath, qntOcurrences in invertedIndex[word].items():
-            print(f"IN: {filePath} - OCURR: {qntOcurrences}")
+            print(f"IN: {filePath} - OCURRENCES: {qntOcurrences}")
         print()
+
+
+def searchIndex(chosenTerm: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+    possibleKey: str = chosenTerm.upper()
+    if possibleKey.upper() in invertedIndex.keys():
+        print(f"\n'Niffler': Found the following ocurrences for '{chosenTerm.title()}'!\n")
+        for filePath, qntOcurrences in invertedIndex[possibleKey].items():
+            print(f"IN: {filePath} - OCURRENCES: {qntOcurrences}")
+    else:
+        print(f"\n'Niffler': '{chosenTerm.title()}' not found!\n")
 
 
 def main() -> None:
@@ -190,6 +200,8 @@ def main() -> None:
     else:
         print(f"'Niffler': Sorry! The option '{chosenOption}' is currently under development!")
         exit(1)
+
+    searchIndex("Harry", invertedIndex)
     
 
 if __name__ == "__main__":
