@@ -86,7 +86,7 @@ def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], 
     if len(recievedOption) == 1 and len(recievedPaths) == 0:
         if recievedOption[0] in ["-h", "--help"]:
             helpMessage(programName, supportedOptions)
-            return True
+            exit(0)
         return validateOption(supportedOptions, recievedOption[0], hasComplement=False)
 
     if len(recievedOption) == 1 and len(recievedOption) > 0:
@@ -104,7 +104,36 @@ def readFile(filePath: str) -> List[str]:
         return currentFile.read().splitlines()
 
 
+def indexFile(filePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+    fileContent: List[str] = readFile(filePath)
+
+    for line in fileContent:
+        for word in line.split():
+            newWord: str = word.upper()
+            qntOcurrences: int = line.split().count(word)
+            for char in newWord:
+                if ord(char) not in range(65, 91) and ord(char) not in range(97, 123):
+                    newWord = newWord.replace(char, '')
+            if newWord in invertedIndex.keys():
+                if filePath in invertedIndex[newWord].keys():
+                    invertedIndex[newWord][filePath] += qntOcurrences
+                else:
+                    invertedIndex[newWord][filePath] = qntOcurrences
+            else:
+                invertedIndex[newWord] = {filePath: qntOcurrences}
+
+
+def showIndex(invertedIndex: Dict[str, Dict[str, int]]) -> None:
+    for word in invertedIndex.keys():
+        print(f"{word}: ")
+        for filePath, qntOcurrences in invertedIndex[word].items():
+            print(f"IN: {filePath} - OCURR: {qntOcurrences}")
+        print()
+
+
 def main() -> None:
+
+    programName: str = argv.pop(0)
 
     supportedArguments: Dict[Tuple[str, str], str] = {
         ("-a", "--add"): "Give a file (or some) to 'Niffler' and it will analyze it!",
@@ -113,11 +142,11 @@ def main() -> None:
         ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
     }
 
-    programName: str = argv.pop(0)
 
-    recievedOptions: List[str] = [
-        x for x in argv if x.startswith("-") or x.startswith("--")]
+    recievedOptions: List[str] = [x for x in argv if x.startswith("-") or x.startswith("--")]
     recievedPaths: List[str] = list(set(argv) - set(recievedOptions))
+
+    invertedIndex: Dict[str, Dict[str, int]] = {}
 
     if not ensureDependencies():
         print("'Niffler': Couldn't create nedded dependencies!")
@@ -126,40 +155,27 @@ def main() -> None:
     if not validateArguments(programName, supportedArguments, recievedOptions, recievedPaths):
         exit(1)
 
-    validPaths, invalidPaths = validatePaths(recievedPaths)
+    validPaths, _ = validatePaths(recievedPaths)
+    chosenOption: str = recievedOptions[0]
 
-    if len(invalidPaths) > 0:
-        print("\n'Niffler': The following files were out of reach!\n")
-        for currentPath in invalidPaths:
-            print(f"- {basename(currentPath)}")
+    # if len(invalidPaths) > 0:
+    #     print("\n'Niffler': The following files were out of reach!\n")
+    #     for currentPath in invalidPaths:
+    #         print(f"- {basename(currentPath)}")
+    #
+    # if len(validPaths) > 0:
+    #     print("\n'Niffler': Indexing the following files...\n")
+    #     for currentPath in validPaths:
+    #         print(f"- {basename(currentPath)}")
 
-    if len(validPaths) > 0:
-        print("\n'Niffler': Indexing the following files...\n")
+    
+    if chosenOption in ["-a", "--add"]:
         for currentPath in validPaths:
-            print(f"- {basename(currentPath)}")
-
-    filesContents: Dict[str, List[str]] = {}
-    invertedIndex: Dict[str, Dict[str, int]] = {}
-
-    for currentPath in validPaths:
-        filesContents[currentPath] = readFile(currentPath)
-
-    for filePath, fileContent in filesContents.items():
-        for line in fileContent:
-            for word in line.split():
-                newWord: str = word.upper()
-                qntOcurrences: int = line.split().count(word)
-                for char in newWord:
-                    if ord(char) not in range(65, 91) and ord(char) not in range(97, 123):
-                        newWord = newWord.replace(char, '')
-                if newWord in invertedIndex.keys():
-                    if filePath in invertedIndex[newWord].keys():
-                        invertedIndex[newWord][filePath] += qntOcurrences
-                    else:
-                        invertedIndex[newWord][filePath] = qntOcurrences
-                else:
-                    invertedIndex[newWord] = {filePath: qntOcurrences}
-
+            indexFile(currentPath, invertedIndex)
+    else:
+        print(f"'Niffler': Sorry! The option '{chosenOption}' is currently under development!")
+        exit(1)
+    
 
 if __name__ == "__main__":
     main()
