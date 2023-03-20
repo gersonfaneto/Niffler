@@ -7,6 +7,10 @@ from os.path import isdir, isfile, join, basename
 from string import punctuation
 
 
+InvertedIndex = Dict[str, Dict[str, int]]
+SupportedArguments = Dict[Tuple[str, str], str]
+
+
 # WARNING: Linux/Unix compatible only!
 def ensureDependencies(installPath: str, indexPath: str) -> bool:
     try:
@@ -21,12 +25,7 @@ def ensureDependencies(installPath: str, indexPath: str) -> bool:
         return False
 
 
-def errorMessage(programName: str) -> None:
-    print("\n'Niffler': Waiting for orders...")
-    print(f"'Niffler': Try using '{programName} --help' for more information!")
-
-
-def helpMessage(programName: str, supportedOptions: Dict[Tuple[str, str], str], supportedModifiers: Dict[Tuple[str, str], str]) -> None:
+def helpMessage(programName: str, supportedOptions: SupportedArguments, supportedModifiers: SupportedArguments) -> None:
     print("\n'Niffler': A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
     print(f"Usage: {programName} <OPTION> [FILE.../WORD]\n")
 
@@ -44,7 +43,7 @@ def helpMessage(programName: str, supportedOptions: Dict[Tuple[str, str], str], 
     print("\nReleased under MIT by @gersonfaneto")
 
 
-def validateOption(supportedOptions: Dict[Tuple[str, str], str], recievedOption: str, hasComplement: bool = True) -> bool:
+def validateOption(supportedOptions: SupportedArguments, recievedOption: str, hasComplement: bool = True) -> bool:
     for keyPair, optionDescription in supportedOptions.items():
         if recievedOption in keyPair and hasComplement:
             return True
@@ -56,7 +55,7 @@ def validateOption(supportedOptions: Dict[Tuple[str, str], str], recievedOption:
     return False
 
 
-def validateModifiers(supportedModifiers: Dict[Tuple[str, str], str], recievedModifier: str, hasComplement: bool = True) -> bool:
+def validateModifiers(supportedModifiers: SupportedArguments, recievedModifier: str, hasComplement: bool = True) -> bool:
     for keyPair, _ in supportedModifiers.items():
         if recievedModifier in keyPair and hasComplement:
             return True
@@ -88,11 +87,12 @@ def validatePaths(recievedPaths: List[str]) -> Tuple[List[str], List[str]]:
     return validPaths, invalidPaths
 
 
-def validateArguments(programName: str, supportedOptions: Dict[Tuple[str, str], str], supportedModifiers: Dict[Tuple[str, str], str],
+def validateArguments(programName: str, supportedOptions: SupportedArguments, supportedModifiers: SupportedArguments,
                       recievedOptions: List[str], recievedModifiers: List[str], recievedComplements: List[str]) -> bool:
     if len(recievedOptions) == 0:
         if len(recievedModifiers) == 0 and len(recievedComplements) == 0:
-            errorMessage(programName)
+            print("\n'Niffler': Waiting for orders...")
+            print(f"'Niffler': Try using '{programName} --help' for more information!")
             return False
         elif len(recievedModifiers) == 1 and len(recievedComplements) == 0:
             validateModifiers(supportedModifiers, recievedModifiers[0], False)
@@ -142,20 +142,20 @@ def readFile(filePath: str) -> List[str]:
         return currentFile.read().splitlines()
 
 
-def writeCache(cachePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+def writeCache(cachePath: str, invertedIndex: InvertedIndex) -> None:
     with open(cachePath, "w+") as indexCache:
         for word in invertedIndex.keys():
             indexCache.write(f"[{word}]:{invertedIndex[word]}\n")
 
 
-def readCache(cachePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+def readCache(cachePath: str, invertedIndex: InvertedIndex) -> None:
     with open(cachePath, "r") as indexCache:
         for line in indexCache.readlines():
             word, wordInfo = line.split(":", 1)
             invertedIndex[word[1:-1]] = eval(wordInfo)
 
 
-def indexFile(filePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+def indexFile(filePath: str, invertedIndex: InvertedIndex) -> None:
     fileContent: List[str] = readFile(filePath)
 
     for line in fileContent:
@@ -175,7 +175,7 @@ def indexFile(filePath: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
                 invertedIndex[newWord] = {filePath: qntOcurrences}
 
 
-def showIndex(invertedIndex: Dict[str, Dict[str, int]]) -> None:
+def showIndex(invertedIndex: InvertedIndex) -> None:
     for word in invertedIndex.keys():
         print(f"{word}: ")
         for filePath, qntOcurrences in invertedIndex[word].items():
@@ -183,7 +183,7 @@ def showIndex(invertedIndex: Dict[str, Dict[str, int]]) -> None:
         print()
 
 
-def searchIndex(chosenTerm: str, invertedIndex: Dict[str, Dict[str, int]]) -> None:
+def searchIndex(chosenTerm: str, invertedIndex: InvertedIndex) -> None:
     possibleKey: str = chosenTerm.upper()
     if possibleKey.upper() in invertedIndex.keys():
         print(f"\n'Niffler': Found the following ocurrences for '{chosenTerm.title()}'!\n")
@@ -201,14 +201,14 @@ def main() -> None:
 
     programName: str = argv.pop(0)
 
-    supportedOptions: Dict[Tuple[str, str], str] = {
+    supportedOptions: SupportedArguments = {
         ("-h", "--help"): "'Niffler' shows you his abilities!",
         ("-a", "--add"): "Give a FILE (or some) to 'Niffler' and it will analyze it!",
         ("-r", "--remove"): "Give a FILE (or some) to 'Niffler' and it will be erased from his knowledge!",
         ("-s", "--search-index"): "Give a WORD to 'Niffler' and he will find its ocurrences on the Index!",
         ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
     }
-    supportedModifiers: Dict[Tuple[str, str], str] = {
+    supportedModifiers: SupportedArguments = {
         ("-v", "--verbose"): "Extends the output information of some operations."
     }
 
@@ -216,7 +216,7 @@ def main() -> None:
     recievedModifiers: List[str] = list(filter(lambda x: x in [y for z in supportedModifiers.keys() for y in z], argv))
     recievedComplements: List[str] = list(set(argv) - set(recievedOptions) - set(recievedModifiers))
 
-    invertedIndex: Dict[str, Dict[str, int]] = {}
+    invertedIndex: InvertedIndex = {}
 
     if not ensureDependencies(installPath, invertedIndexCache):
         print("'Niffler': Couldn't create nedded dependencies!")
