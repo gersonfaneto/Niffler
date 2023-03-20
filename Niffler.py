@@ -283,6 +283,7 @@ def main() -> None:
                 print(f"'Niffler': The file '{currentPath}' wasn't found!")
                 hadSuccess = False
         if not hadSuccess:
+            writeCache(invertedIndexCache, invertedIndex)
             exit(1)
     elif chosenOption in ["-s", "--search-index"]:
         searchIndex(chosenComplement, invertedIndex)
