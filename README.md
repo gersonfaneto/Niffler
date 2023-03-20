@@ -1,4 +1,5 @@
-# Niffler
+Niffler
+=======
 
 [![License](https://img.shields.io/github/license/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler/blob/main/LICENSE)
 [![Stars](https://img.shields.io/github/stars/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler)
@@ -19,24 +20,25 @@ a searchable 'Inverted Index'.
 > **Note**: 'Niffler' is a CLI tool built on a GNU/Linux based system. Support for
 > other operating systems is under testing.
 
-1. Clone/Download the project files onto your local machine.
+1. Clone this repository into your local machine.
 
 ```console
 $ git clone https://github.com/gersonfaneto/Niffler
 ```
 
 2. Execute the `Niffler.py` using your installed python interpreter (version >= 3.10)
-   or as any other bash like script.
+or as any other bash like script.
 
 ```console
-$ python Niffler.py --help
+$ python Niffler.py --help # Display the help message.
 ```
 
 ```console
-$ ./Niffler.py -h
+$ ./Niffler.py -h # Equivalent to the above.
 ```
 
-> **Note**: Passing '-h' or '--help' as the argument will bring up the tool usage.
+> **Note**: 'Niffler' will create and keep it's dependencies on a folder called 
+`./niffler` located on your `$HOME` directory.
 
 ## License
 
