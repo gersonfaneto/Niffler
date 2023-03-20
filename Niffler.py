@@ -5,6 +5,7 @@ from sys import argv
 from os import walk, mkdir, environ, system
 from os.path import isdir, isfile, join, basename
 from string import punctuation
+from copy import deepcopy
 
 
 InvertedIndex = Dict[str, Dict[str, int]]
@@ -175,6 +176,22 @@ def indexFile(filePath: str, invertedIndex: InvertedIndex) -> None:
                 invertedIndex[newWord] = {filePath: qntOcurrences}
 
 
+
+def removeFile(filePath: str, invertedIndex: InvertedIndex) -> bool:
+    foundSomething: int = 0
+    indexCopy: InvertedIndex = deepcopy(invertedIndex)
+
+    for word in indexCopy.keys():
+        for currentPath, _ in indexCopy[word].items():
+            if currentPath == filePath:
+                invertedIndex[word].pop(currentPath)
+                foundSomething += 1
+        if len(invertedIndex[word]) == 0:
+            invertedIndex.pop(word)
+
+    return foundSomething > 0
+
+
 def showIndex(invertedIndex: InvertedIndex) -> None:
     for word in invertedIndex.keys():
         print(f"{word}: ")
@@ -230,7 +247,7 @@ def main() -> None:
     validPaths, invalidPaths = validatePaths(recievedComplements)
     chosenOption: str = recievedOptions[0] if len(recievedOptions) > 0 else ""
     chosenModifier: str = recievedModifiers[0] if len(recievedModifiers) > 0 else ""
-    chosenWord: str = recievedComplements[0] if len(recievedComplements) > 0 else ""
+    chosenComplement: str = recievedComplements[0] if len(recievedComplements) > 0 else ""
 
     if chosenOption in ["-h", "--help"]:
         pass
@@ -239,18 +256,33 @@ def main() -> None:
             if len(invalidPaths) > 0:
                 print("\n'Niffler': The following files were out of reach!\n")
                 for currentPath in invalidPaths:
-                    print(f"- {basename(currentPath)}")
-            
+                    print(f"- {currentPath}")
             if len(validPaths) > 0:
                 print("\n'Niffler': Indexing the following files...\n")
                 for currentPath in validPaths:
-                    print(f"- {basename(currentPath)}")
+                    print(f"- {currentPath}")
         for currentPath in validPaths:
             indexFile(currentPath, invertedIndex)
     elif chosenOption in ["-r", "--remove"]:
-        pass
+        hadSuccess: bool = True
+        if chosenModifier in ["-v", "--verbose"]:
+            if len(invalidPaths) > 0:
+                print("\n'Niffler': The following files were out of reach!\n")
+                for currentPath in invalidPaths:
+                    print(f"- {currentPath}")
+            if len(validPaths) > 0:
+                print("\n'Niffler': Removing the following files...\n")
+                for currentPath in validPaths:
+                    print(f"- {currentPath}")
+        print()
+        for currentPath in validPaths:
+            if not removeFile(currentPath, invertedIndex):
+                print(f"'Niffler': The file '{currentPath}' wasn't found!")
+                hadSuccess = False
+        if not hadSuccess:
+            exit(1)
     elif chosenOption in ["-s", "--search-index"]:
-        searchIndex(chosenWord, invertedIndex)
+        searchIndex(chosenComplement, invertedIndex)
     elif chosenOption in ["-S", "--show-index"]:
         showIndex(invertedIndex)
     else:
