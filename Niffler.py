@@ -193,11 +193,14 @@ def removeFile(filePath: str, invertedIndex: InvertedIndex) -> bool:
 
 
 def showIndex(invertedIndex: InvertedIndex) -> None:
-    for word in invertedIndex.keys():
-        print(f"{word}: ")
-        for filePath, qntOcurrences in invertedIndex[word].items():
-            print(f"IN: {filePath} - OCURRENCES: {qntOcurrences}")
-        print()
+    if len(invertedIndex) == 0:
+        print("'Niffler': Nothing to see here!")
+    else:
+        for word in invertedIndex.keys():
+            print(f"{word}: ")
+            for filePath, qntOcurrences in invertedIndex[word].items():
+                print(f"IN: {filePath} - OCURRENCES: {qntOcurrences}")
+            print()
 
 
 def searchIndex(chosenTerm: str, invertedIndex: InvertedIndex) -> None:
