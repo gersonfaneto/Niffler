@@ -3,7 +3,7 @@
 from typing import Tuple, List, Dict
 from sys import argv
 from os import walk, mkdir, environ, system
-from os.path import isdir, isfile, join, basename
+from os.path import isdir, isfile, join
 from string import punctuation
 from copy import deepcopy
 
@@ -27,7 +27,7 @@ def ensureDependencies(installPath: str, indexPath: str) -> bool:
 
 
 def helpMessage(programName: str, supportedOptions: SupportedArguments, supportedModifiers: SupportedArguments) -> None:
-    print("\n'Niffler': A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
+    print("\nNiffler: A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
     print(f"Usage: {programName} <OPTION> [FILE.../WORD]\n")
 
     print("Options:")
@@ -52,7 +52,7 @@ def validateOption(supportedOptions: SupportedArguments, recievedOption: str, ha
             print(f"You selected the '{recievedOption}' option! {optionDescription}")
             return False
 
-    print(f"You selected the '{recievedOption}' option! 'Niffler' doesn't know this one...")
+    print(f"You selected the '{recievedOption}' option! Niffler doesn't know this one...")
     return False
 
 
@@ -64,7 +64,7 @@ def validateModifiers(supportedModifiers: SupportedArguments, recievedModifier: 
             print(f"You used the '{recievedModifier}' modifier! By itself it doesn't do anything!")
             return False
 
-    print(f"You used the '{recievedModifier} modifier! 'Niffler' doesn't know this one...")
+    print(f"You used the '{recievedModifier} modifier! Niffler doesn't know this one...")
     return False
 
 
@@ -92,18 +92,18 @@ def validateArguments(programName: str, supportedOptions: SupportedArguments, su
                       recievedOptions: List[str], recievedModifiers: List[str], recievedComplements: List[str]) -> bool:
     if len(recievedOptions) == 0:
         if len(recievedModifiers) == 0 and len(recievedComplements) == 0:
-            print("\n'Niffler': Waiting for orders...")
-            print(f"'Niffler': Try using '{programName} --help' for more information!")
+            print("\nNiffler: Waiting for orders...")
+            print(f"Niffler: Try using '{programName} --help' for more information!")
             return False
         elif len(recievedModifiers) == 1 and len(recievedComplements) == 0:
             validateModifiers(supportedModifiers, recievedModifiers[0], False)
             return False
         else:
-            print("'Niffler' didn't detect any orders! Use the '--help' or '-h' flags for detailed usage information!")
+            print("Niffler didn't detect any orders! Use the '--help' or '-h' flags for detailed usage information!")
             return False
 
     if len(recievedOptions) > 1:
-        print("'Niffler': Sorry! Can only handle ONE operation at a time!")
+        print("Niffler: Sorry! Can only handle ONE operation at a time!")
         return False
 
     if len(recievedOptions) == 1:
@@ -194,7 +194,7 @@ def removeFile(filePath: str, invertedIndex: InvertedIndex) -> bool:
 
 def showIndex(invertedIndex: InvertedIndex) -> None:
     if len(invertedIndex) == 0:
-        print("'Niffler': Nothing to see here!")
+        print("Niffler: Nothing to see here!")
     else:
         for word in invertedIndex.keys():
             print(f"{word}: ")
@@ -206,11 +206,11 @@ def showIndex(invertedIndex: InvertedIndex) -> None:
 def searchIndex(chosenTerm: str, invertedIndex: InvertedIndex) -> None:
     possibleKey: str = chosenTerm.upper()
     if possibleKey.upper() in invertedIndex.keys():
-        print(f"\n'Niffler': Found the following ocurrences for '{chosenTerm.title()}'!\n")
+        print(f"\nNiffler: Found the following ocurrences for '{chosenTerm.title()}'!\n")
         for filePath, qntOcurrences in invertedIndex[possibleKey].items():
             print(f"IN: {filePath} - OCURRENCES: {qntOcurrences}")
     else:
-        print(f"\n'Niffler': '{chosenTerm.title()}' not found!")
+        print(f"\nNiffler: '{chosenTerm.title()}' not found!")
 
 
 def main() -> None:
@@ -222,11 +222,11 @@ def main() -> None:
     programName: str = argv.pop(0)
 
     supportedOptions: SupportedArguments = {
-        ("-h", "--help"): "'Niffler' shows you his abilities!",
-        ("-a", "--add"): "Give a FILE (or some) to 'Niffler' and it will analyze it!",
-        ("-r", "--remove"): "Give a FILE (or some) to 'Niffler' and it will be erased from his knowledge!",
-        ("-s", "--search-index"): "Give a WORD to 'Niffler' and he will find its ocurrences on the Index!",
-        ("-S", "--show-index"): "Displays 'Niffler' immense knowledge, use with caution!",
+        ("-h", "--help"): "Niffler shows you his abilities!",
+        ("-a", "--add"): "Give a FILE (or some) to Niffler and it will analyze it!",
+        ("-r", "--remove"): "Give a FILE (or some) to Niffler and it will be erased from his knowledge!",
+        ("-s", "--search-index"): "Give a WORD to Niffler and he will find its ocurrences on the Index!",
+        ("-S", "--show-index"): "Displays Niffler immense knowledge, use with caution!",
     }
     supportedModifiers: SupportedArguments = {
         ("-v", "--verbose"): "Extends the output information of some operations."
@@ -239,7 +239,7 @@ def main() -> None:
     invertedIndex: InvertedIndex = {}
 
     if not ensureDependencies(installPath, invertedIndexCache):
-        print("'Niffler': Couldn't create nedded dependencies!")
+        print("Niffler: Couldn't create nedded dependencies!")
         exit(1)
     else:
         readCache(invertedIndexCache, invertedIndex)
@@ -257,11 +257,11 @@ def main() -> None:
     elif chosenOption in ["-a", "--add"]:
         if chosenModifier in ["-v", "--verbose"]:
             if len(invalidPaths) > 0:
-                print("\n'Niffler': The following files were out of reach!\n")
+                print("\nNiffler: The following files were out of reach!\n")
                 for currentPath in invalidPaths:
                     print(f"- {currentPath}")
             if len(validPaths) > 0:
-                print("\n'Niffler': Indexing the following files...\n")
+                print("\nNiffler: Indexing the following files...\n")
                 for currentPath in validPaths:
                     print(f"- {currentPath}")
         for currentPath in validPaths:
@@ -270,17 +270,17 @@ def main() -> None:
         hadSuccess: bool = True
         if chosenModifier in ["-v", "--verbose"]:
             if len(invalidPaths) > 0:
-                print("\n'Niffler': The following files were out of reach!\n")
+                print("\nNiffler: The following files were out of reach!\n")
                 for currentPath in invalidPaths:
                     print(f"- {currentPath}")
             if len(validPaths) > 0:
-                print("\n'Niffler': Removing the following files...\n")
+                print("\nNiffler: Removing the following files...\n")
                 for currentPath in validPaths:
                     print(f"- {currentPath}")
         print()
         for currentPath in validPaths:
             if not removeFile(currentPath, invertedIndex):
-                print(f"'Niffler': The file '{currentPath}' wasn't found!")
+                print(f"Niffler: The file '{currentPath}' wasn't found!")
                 hadSuccess = False
         if not hadSuccess:
             writeCache(invertedIndexCache, invertedIndex)
@@ -290,7 +290,7 @@ def main() -> None:
     elif chosenOption in ["-S", "--show-index"]:
         showIndex(invertedIndex)
     else:
-        print(f"'Niffler': Sorry! The option '{chosenOption}' is not implemented yet!")
+        print(f"Niffler: Sorry! The option '{chosenOption}' is not implemented yet!")
 
     writeCache(invertedIndexCache, invertedIndex)
 
