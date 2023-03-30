@@ -12,6 +12,14 @@
 
 > This project was a college assignment, so don't expect much of it 😉.
 
+<h4 align="center">
+  <a href="#what-is-this%3F">About</a>
+  ·
+  <a href="#how-to-use-it%3F">Usage</a>
+  ·
+  <a href="#license">License</a>
+</h4>
+
 ## What is this?
 
 'Niffler' is inspired on the functionality of other tools like 'fzf' and 'grep'. It is a tool
