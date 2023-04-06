@@ -27,7 +27,12 @@ def ensureDependencies(installPath: str, indexPath: str) -> bool:
 
 
 def helpMessage(programName: str, supportedOptions: SupportedArguments, supportedModifiers: SupportedArguments) -> None:
-    print("\nNiffler: A CLI tool for indexing the contents of text files in a searchable Inverted Index.\n")
+    print("╭━╮╱╭╮╱╱╱╭━╮╱╭━╮╭╮");
+    print("┃┃╰╮┃┃╱╱╱┃╭╯╱┃╭╯┃┃");
+    print("┃╭╮╰╯┃╭╮╭╯╰╮╭╯╰╮┃┃╱╭━━╮╭━╮");
+    print("┃┃╰╮┃┃┣┫╰╮╭╯╰╮╭╯┃┃╱┃┃━┫┃╭╯\tYour terminal based local search engine!");
+    print("┃┃╱┃┃┃┃┃╱┃┃╱╱┃┃╱┃╰╮┃┃━┫┃┃ \tReleased under MIT by @gersonfaneto");
+    print("╰╯╱╰━╯╰╯╱╰╯╱╱╰╯╱╰━╯╰━━╯╰╯\n");
     print(f"Usage: {programName} <OPTION> [FILE.../WORD]\n")
 
     print("Options:")
@@ -40,8 +45,6 @@ def helpMessage(programName: str, supportedOptions: SupportedArguments, supporte
     for keyPair, modifierDescription in supportedModifiers.items():
         shortVersion, fullVersion = keyPair
         print(f"{'' + shortVersion +  ', ' + fullVersion:<30} {modifierDescription}")
-
-    print("\nReleased under MIT by @gersonfaneto")
 
 
 def validateOption(supportedOptions: SupportedArguments, recievedOption: str, hasComplement: bool = True) -> bool:
