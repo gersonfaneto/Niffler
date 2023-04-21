@@ -22,24 +22,23 @@ def ensureDependencies(installPath: str, indexPath: str) -> bool:
             system("touch " + indexPath)
 
         return True
-    except:
+    except BaseException:
         return False
 
 
 def helpMessage(programName: str, supportedOptions: SupportedArguments, supportedModifiers: SupportedArguments) -> None:
-    print("╭━╮╱╭╮╱╱╱╭━╮╱╭━╮╭╮");
-    print("┃┃╰╮┃┃╱╱╱┃╭╯╱┃╭╯┃┃");
-    print("┃╭╮╰╯┃╭╮╭╯╰╮╭╯╰╮┃┃╱╭━━╮╭━╮");
-    print("┃┃╰╮┃┃┣┫╰╮╭╯╰╮╭╯┃┃╱┃┃━┫┃╭╯\tYour terminal based local search engine!");
-    print("┃┃╱┃┃┃┃┃╱┃┃╱╱┃┃╱┃╰╮┃┃━┫┃┃ \tReleased under MIT by @gersonfaneto");
-    print("╰╯╱╰━╯╰╯╱╰╯╱╱╰╯╱╰━╯╰━━╯╰╯\n");
+    print("╭━╮╱╭╮╱╱╱╭━╮╱╭━╮╭╮")
+    print("┃┃╰╮┃┃╱╱╱┃╭╯╱┃╭╯┃┃")
+    print("┃╭╮╰╯┃╭╮╭╯╰╮╭╯╰╮┃┃╱╭━━╮╭━╮")
+    print("┃┃╰╮┃┃┣┫╰╮╭╯╰╮╭╯┃┃╱┃┃━┫┃╭╯\tYour terminal based local search engine!")
+    print("┃┃╱┃┃┃┃┃╱┃┃╱╱┃┃╱┃╰╮┃┃━┫┃┃ \tReleased under MIT by @gersonfaneto")
+    print("╰╯╱╰━╯╰╯╱╰╯╱╱╰╯╱╰━╯╰━━╯╰╯\n")
     print(f"Usage: {programName} <OPTION> [FILE.../WORD]\n")
 
     print("Options:")
     for keyPair, optionDescription in supportedOptions.items():
         shortVersion, fullVersion = keyPair
         print(f"{'' + shortVersion +  ', ' + fullVersion:<30} {optionDescription}")
-
 
     print("\nModifiers:")
     for keyPair, modifierDescription in supportedModifiers.items():
@@ -59,7 +58,11 @@ def validateOption(supportedOptions: SupportedArguments, recievedOption: str, ha
     return False
 
 
-def validateModifiers(supportedModifiers: SupportedArguments, recievedModifier: str, hasComplement: bool = True) -> bool:
+def validateModifiers(
+    supportedModifiers: SupportedArguments,
+    recievedModifier: str,
+    hasComplement: bool = True
+) -> bool:
     for keyPair, _ in supportedModifiers.items():
         if recievedModifier in keyPair and hasComplement:
             return True
@@ -91,8 +94,10 @@ def validatePaths(recievedPaths: List[str]) -> Tuple[List[str], List[str]]:
     return validPaths, invalidPaths
 
 
-def validateArguments(programName: str, supportedOptions: SupportedArguments, supportedModifiers: SupportedArguments,
-                      recievedOptions: List[str], recievedModifiers: List[str], recievedComplements: List[str]) -> bool:
+def validateArguments(
+    programName: str, supportedOptions: SupportedArguments, supportedModifiers: SupportedArguments,
+    recievedOptions: List[str], recievedModifiers: List[str], recievedComplements: List[str]
+) -> bool:
     if len(recievedOptions) == 0:
         if len(recievedModifiers) == 0 and len(recievedComplements) == 0:
             print("\nNiffler: Waiting for orders...")
@@ -179,7 +184,6 @@ def indexFile(filePath: str, invertedIndex: InvertedIndex) -> None:
                 invertedIndex[newWord] = {filePath: qntOcurrences}
 
 
-
 def removeFile(filePath: str, invertedIndex: InvertedIndex) -> bool:
     foundSomething: int = 0
     indexCopy: InvertedIndex = deepcopy(invertedIndex)
@@ -247,7 +251,14 @@ def main() -> None:
     else:
         readCache(invertedIndexCache, invertedIndex)
 
-    if not validateArguments(programName, supportedOptions, supportedModifiers, recievedOptions, recievedModifiers, recievedComplements):
+    if not validateArguments(
+        programName,
+        supportedOptions,
+        supportedModifiers,
+        recievedOptions,
+        recievedModifiers,
+        recievedComplements
+    ):
         exit(1)
 
     validPaths, invalidPaths = validatePaths(recievedComplements)
