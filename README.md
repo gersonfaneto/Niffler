@@ -2,11 +2,11 @@
 
 <div align="center">
 
-[![Activity](https://img.shields.io/github/last-commit/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler/commit/main)
-[![License](https://img.shields.io/github/license/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler/blob/main/LICENSE)
-[![Stars](https://img.shields.io/github/stars/gersonfaneto/Niffler?style=for-the-badge&logo=appveyor)](https://github.com/gersonfaneto/Niffler)
+[![Activity](https://img.shields.io/github/last-commit/gersonfaneto/Niffler?style=for-the-badge&logo=git)](https://github.com/gersonfaneto/Niffler/commit/main)
+[![License](https://img.shields.io/github/license/gersonfaneto/Niffler?style=for-the-badge)](https://github.com/gersonfaneto/Niffler/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/gersonfaneto/Niffler?style=for-the-badge&logo=github)](https://github.com/gersonfaneto/Niffler)
 ![Language](https://img.shields.io/static/v1?label=LANGUAGE&message=Python&color=informational&style=for-the-badge)
-![Version](https://img.shields.io/static/v1?label=VERSION&message=1.0&color=success&style=for-the-badge)
+![Version](https://img.shields.io/static/v1?label=VERSION&message=1.0.0&color=informational&style=for-the-badge)
 
 </div>
 
