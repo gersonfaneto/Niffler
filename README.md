@@ -1,3 +1,13 @@
+```markdown
+ _   _   _    __    __   _               
+| \ | | (_)  / _|  / _| | |              
+|  \| |  _  | |_  | |_  | |   ___   _ __    # Your terminal based local search engine!
+| . ` | | | |  _| |  _| | |  / _ \ | '__|   
+| |\  | | | | |   | |   | | |  __/ | |      # by @gersonfaneto
+|_| \_| |_| |_|   |_|   |_|  \___| |_|   
+
+```
+
 <h1 align="center">Niffler</h1>
 
 <div align="center">
