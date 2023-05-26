@@ -8,7 +8,9 @@
 
 ```
 
-<h1 align="center">Niffler</h1>
+> "A Niffler is a small creature about the size of a cat, with a long and pointed snout.
+> They are very attracted to gold and glittering objects."
+> -- Fantastic Beasts & Where To Find Them, Newt Scamander.
 
 <div align="center">
 
@@ -19,11 +21,6 @@
 ![Version](https://img.shields.io/static/v1?label=VERSION&message=1.0.0&color=informational&style=for-the-badge)
 
 </div>
-
-> "A Niffler is a small creature about the size of a cat, with a long and pointed snout.
-> They are very attracted to gold and glittering objects."
-> -- Fantastic Beasts & Where To Find Them, Newt Scamander.
-
 
 <h4 align="center">
   <a href="#about">About</a>
